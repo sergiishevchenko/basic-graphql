@@ -9,6 +9,9 @@ const {
     GraphQLList
 } = graphql;
 
+const Movies = require('../models/movie');
+const Directors = require('../models/director');
+
 /*
 // All IDs set automatically by mLab
 // Don't forget to update after creation
@@ -43,7 +46,7 @@ const movies = [
 ];
 
 const directors = [
-  { id: '1', name: "Quentin Tarantino", age: 55 },
+	{ id: '1', name: "Quentin Tarantino", age: 55 },
   { id: '2', name: "Michael Radford", age: 72 },
   { id: '3', name: "James McTeigue", age: 51 },
   { id: '4', name: "Guy Ritchie", age: 50 },
@@ -60,6 +63,7 @@ const MovieType = new GraphQLObjectType({
             type: DirectorType,
             resolve(parent, args) {
                 // return directors.find(director => director.id === parent.id);
+                return Directors.findById(parent.directorId);
             }
         }
     })
@@ -75,6 +79,7 @@ const DirectorType = new GraphQLObjectType({
             type: new GraphQLList(MovieType),
             resolve(parent, args) {
                 // return movies.filter(movie => movie.directorId === parent.id);
+                return Movies.find({ directorId: parent.id });
             }
         }
     })
@@ -88,6 +93,7 @@ const Query = new GraphQLObjectType({
             args: { id: { type: GraphQLID } },
             resolve(parent, args) {
                 // return movies.find(movie => movie.id === args.id);
+                return Movies.findById(args.id);
             }
         },
         director: {
@@ -95,18 +101,21 @@ const Query = new GraphQLObjectType({
             args: { id: { type: GraphQLID } },
             resolve(parent, args) {
                 // return directors.find(director => director.id === args.id);
+                return Directors.findById(args.id);
             }
         },
         movies: {
             type: new GraphQLList(MovieType),
             resolve(parent, args) {
                 // return movies;
+                return Movies.find({});
             }
         },
         directors: {
             type: new GraphQLList(DirectorType),
             resolve(parent, args) {
                 // return directors;
+                return Directors.find({});
             }
         }
     }
